@@ -1,3 +1,7 @@
+# generated js files
+lib/
+public/js/
+
 # Logs
 logs
 *.log
