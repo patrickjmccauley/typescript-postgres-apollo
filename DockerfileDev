@@ -1,0 +1,9 @@
+FROM node:alpine3.16
+
+RUN apk update
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /home/newuser/
+ENV POSTGRESQL_PORT 5431
+
+CMD npm i; npm run watch
