@@ -42,6 +42,11 @@ app.get("/", (_req, res) => {
   return;
 });
 
+app.get("/test", (_req, res) => {
+  res.render("index");
+  return;
+})
+
 await PostModel.sync();
 
 server.listen(process.env.PORT || 3434, () => null);
