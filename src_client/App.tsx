@@ -7,6 +7,7 @@ const FETCH_QUERY = gql`
     posts {
       content
       createdAt
+      postId
     }
   }
 `;
@@ -16,9 +17,19 @@ const MUTATION = gql`
     createPost(content: $content) {
       content
       createdAt
+      postId
     }
   }
 `;
+
+// const SECOND_MUTATION = gql`
+//   mutation EditPost($postId: String!, $newContent: String!) {
+//     editPost(postId: $postId, newContent: $newContent) {
+//       newContent
+//       modifiedAt
+//     }
+//   }
+// `
 
 const PostList: React.FunctionComponent = () => {
   const { loading, error, data, refetch } = useQuery(FETCH_QUERY, {
@@ -33,16 +44,20 @@ const PostList: React.FunctionComponent = () => {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
-  const posts: { content: string; createdAt: Date }[] = data.posts.map(
-    ({ content, createdAt }: { content: string; createdAt: string }) => ({
+  const posts: { content: string; createdAt: Date; postId: number }[] = data.posts.map(
+    ({ content, createdAt, postId }: { content: string; createdAt: string; postId: number }) => ({
       content,
       createdAt: new Date(createdAt),
+      postId: postId, //Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
     })
   );
 
   return (
     <div>
       <div>
+        <div>
+          <h1>Test</h1>
+        </div>
         <div style={{ fontSize: "12px", opacity: 0.5, marginBottom: "5px" }}>
           Make new post
         </div>

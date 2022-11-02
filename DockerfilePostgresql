@@ -4,5 +4,3 @@ ENV POSTGRES_PASSWORD password
 ENV POSTGRES_DB typescript_dev
 
 COPY bin/initdb/init-test-db.sql /docker-entrypoint-initdb.d/
-
-# RUN psql -U postgres -f ./initdb/init-test-db.sq
