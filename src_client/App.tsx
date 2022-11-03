@@ -1,4 +1,5 @@
 import ApolloClient from "./ApolloClient";
+import { Post, PostProperties } from "./Post";
 import { ApolloProvider, gql, useMutation, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 
@@ -7,7 +8,7 @@ const FETCH_QUERY = gql`
     posts {
       content
       createdAt
-      postId
+      id
     }
   }
 `;
@@ -17,19 +18,10 @@ const MUTATION = gql`
     createPost(content: $content) {
       content
       createdAt
-      postId
+      id
     }
   }
 `;
-
-// const SECOND_MUTATION = gql`
-//   mutation EditPost($postId: String!, $newContent: String!) {
-//     editPost(postId: $postId, newContent: $newContent) {
-//       newContent
-//       modifiedAt
-//     }
-//   }
-// `
 
 const PostList: React.FunctionComponent = () => {
   const { loading, error, data, refetch } = useQuery(FETCH_QUERY, {
@@ -44,13 +36,14 @@ const PostList: React.FunctionComponent = () => {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
-  const posts: { content: string; createdAt: Date; postId: number }[] = data.posts.map(
-    ({ content, createdAt, postId }: { content: string; createdAt: string; postId: number }) => ({
-      content,
-      createdAt: new Date(createdAt),
-      postId: postId, //Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
-    })
+
+  const posts: JSX.Element[] = data.posts.map(
+    ({ content, createdAt, id, updatedAt }: PostProperties) => (
+      <Post content={content} createdAt={createdAt} id={id} updatedAt={updatedAt}/>
+    )
   );
+
+  console.log(posts)
 
   return (
     <div>
@@ -92,12 +85,9 @@ const PostList: React.FunctionComponent = () => {
         </div>
       </div>
       <div style={{ marginTop: "20px" }}>
-        {posts.map(({ content, createdAt }, idx) => (
+        {posts.map((post, idx) => (
           <div key={idx} style={{ marginTop: "20px" }}>
-            <div style={{ fontSize: "12px", opacity: 0.5 }}>
-              Posted: {createdAt.toISOString()}
-            </div>
-            <div>{content}</div>
+            {post}
           </div>
         ))}
       </div>

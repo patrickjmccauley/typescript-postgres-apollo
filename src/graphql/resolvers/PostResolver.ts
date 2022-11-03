@@ -26,6 +26,19 @@ class PostResolver {
         const post = await PostModel.create({ content });
         return post;
     }
+
+    @Mutation(() => PostModel)
+    async editPost(
+        @Ctx() _context: any,
+        @Arg("content") content: string,
+        @Arg("id") id: number
+    ): Promise<PostModel | null> {
+        const [post, _] = await PostModel.upsert({
+            content: content,
+            id: id
+        })
+        return post;
+    };
 }
 
 export default PostResolver;

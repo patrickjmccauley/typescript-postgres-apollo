@@ -12,7 +12,10 @@ class PostModel extends Model {
     declare createdAt: Date;
 
     @Field()
-    declare postId: number;
+    declare id: number;
+
+    @Field()
+    declare updatedAt: Date;
 }
 
 PostModel.init(
@@ -27,8 +30,12 @@ PostModel.init(
         createdAt: {
             type: DataTypes.DATE,
         },
-        postId: {
+        id: {
             type: DataTypes.NUMBER,
+            primaryKey: true,
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
         },
     },
     {
