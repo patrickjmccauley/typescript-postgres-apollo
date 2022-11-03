@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 
 const MUTATION = gql`
-    mutation EditPost($content: String!, $id: number!) {
+    mutation ModifyPost($content: String!, $id: Float!) {
         editPost(content: $content, id: $id) {
             content
             id
@@ -15,11 +15,13 @@ const disabledStyle = {
     backgroundColor: "transparent"
 }
 
+const timestampStyle = { fontSize: "12px", opacity: 0.5 }
+
 export interface PostProperties {
   content: string,
   id: number,
-  createdAt: string,
-  updatedAt: string,
+  createdAt: Date,
+  updatedAt: Date,
 }
 
 export function Post(props: PostProperties): JSX.Element {
@@ -28,28 +30,34 @@ export function Post(props: PostProperties): JSX.Element {
     const [editMode, setEditMode] = useState(false)
     const [makeMutation, _] = useMutation(MUTATION);
 
+    const buildEditedBlock = () => {
+      return (
+        <div style={timestampStyle}>
+          Edited: {props.updatedAt.toISOString()}
+        </div>
+      )
+    }
+
     return (
     <div>
-      <div style={{ fontSize: "12px", opacity: 0.5 }}>
-                Posted: {new Date(props.createdAt).toISOString()}
-                {props.updatedAt != props.createdAt ? 
-                  `Edited: ${new Date(props.updatedAt)}`:
-                  ""}
-                <button
-                  id={`button-${props.id}`}
-                  style={{ border: "0pt", marginLeft: "5px",
-                          color: "blue", fontWeight: "bold", backgroundColor: "transparent"}}
-                  onClick={() => {
-                    if (editMode) {
-                        makeMutation({variables: { content: props.content, id: props.id }})
-                    }
-                    setEditMode(!editMode)
-                    setCurrentContent(currentContent)
-                    console.log(currentContent)
-                  }}>
-                    {editMode ? "save" : "edit"}
-                </button>
+      <div style={timestampStyle}>
+        Posted: {props.createdAt.toISOString()}
+        <button
+          id={`button-${props.id}`}
+          style={{ border: "0pt", marginLeft: "5px",
+                  color: "blue", fontWeight: "bold", backgroundColor: "transparent"}}
+          onClick={() => {
+            if (editMode) {
+                makeMutation({variables: { content: currentContent, id: Math.trunc(props.id) }})
+            }
+            setEditMode(!editMode)
+            setCurrentContent(currentContent)
+            console.log(currentContent)
+          }}>
+            {editMode ? "save" : "edit"}
+        </button>
       </div>
+      {props.createdAt != props.updatedAt ? buildEditedBlock() : ""}
       <div>
         <input type="text" disabled={!editMode} value={currentContent}
                 style={editMode ? {} : disabledStyle}

@@ -15,6 +15,7 @@ class PostResolver {
     @Query(() => [PostModel])
     async posts(@Ctx() _context: any): Promise<PostModel[]> {
         const posts = await PostModel.findAll();
+        console.log(`Found posts ${JSON.stringify(posts)}`)
         return posts;
     }
 
@@ -33,6 +34,7 @@ class PostResolver {
         @Arg("content") content: string,
         @Arg("id") id: number
     ): Promise<PostModel | null> {
+        console.log(`Received edit args ${id} and ${content}`)
         const [post, _] = await PostModel.upsert({
             content: content,
             id: id

@@ -2,6 +2,7 @@ import ApolloClient from "./ApolloClient";
 import { Post, PostProperties } from "./Post";
 import { ApolloProvider, gql, useMutation, useQuery } from "@apollo/client";
 import React, { useState } from "react";
+import { INTEGER } from "sequelize";
 
 const FETCH_QUERY = gql`
   query GetPosts {
@@ -9,13 +10,14 @@ const FETCH_QUERY = gql`
       content
       createdAt
       id
+      updatedAt
     }
   }
 `;
 
 const MUTATION = gql`
-  mutation MakePost($content: String!) {
-    createPost(content: $content) {
+  mutation MakePost($content: String!, $id: Float!) {
+    editPost(content: $content, id: $id) {
       content
       createdAt
       id
@@ -38,10 +40,16 @@ const PostList: React.FunctionComponent = () => {
   }
 
   const posts: JSX.Element[] = data.posts.map(
-    ({ content, createdAt, id, updatedAt }: PostProperties) => (
-      <Post content={content} createdAt={createdAt} id={id} updatedAt={updatedAt}/>
+    ({ content, createdAt, id, updatedAt }: {content: string; createdAt: string; id: number; updatedAt: string}) => (
+      <Post content={content} createdAt={new Date(createdAt)} id={id} updatedAt={new Date(updatedAt)}/>
     )
   );
+  // sort by most recently created
+  posts.sort((a: JSX.Element, b: JSX.Element) => {
+    return (
+      a.props.createdAt.getMilliseconds() - b.props.createdAt.getMilliseconds()
+    )
+  })
 
   console.log(posts)
 
@@ -68,7 +76,7 @@ const PostList: React.FunctionComponent = () => {
             disabled={isMutationLoading}
             onClick={() => {
               makeMutation({
-                variables: { content },
+                variables: { content: content, id: Math.floor(Math.random() * 2147483647)},
               }).then((result) => {
                 if (!result.errors) {
                   updateContent("");
