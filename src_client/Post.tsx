@@ -32,11 +32,14 @@ export function Post(props: PostProperties): JSX.Element {
 
     const buildEditedBlock = () => {
       return (
-        <div style={timestampStyle}>
+        <div style={Object.assign({}, timestampStyle, {color: "red"})}>
           Edited: {props.updatedAt.toISOString()}
         </div>
       )
     }
+
+    console.log(`Millis for created=${props.createdAt.toISOString()} vs \
+     millis updated=${props.updatedAt.toISOString()}`)
 
     return (
     <div>
@@ -57,7 +60,7 @@ export function Post(props: PostProperties): JSX.Element {
             {editMode ? "save" : "edit"}
         </button>
       </div>
-      {props.createdAt != props.updatedAt ? buildEditedBlock() : ""}
+      {props.createdAt.toISOString() !== props.updatedAt.toISOString() ? buildEditedBlock() : ""}
       <div>
         <input type="text" disabled={!editMode} value={currentContent}
                 style={editMode ? {} : disabledStyle}
